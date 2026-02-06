@@ -22,6 +22,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('departments', DepartmentController::class);
     Route::apiResource('positions', PositionController::class);
     Route::apiResource('periods', PeriodController::class);
-    Route::apiResource('evaluations', EvaluationController::class);
-    
+    Route::apiResource('evaluations', EvaluationController::class); 
 });
