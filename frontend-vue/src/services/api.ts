@@ -5,7 +5,7 @@ axios.defaults.withCredentials = true;
 axios.defaults.withXSRFToken = true;
 
 const authApi = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://192.168.0.225:9021/',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -13,7 +13,7 @@ const authApi = axios.create({
 });
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://192.168.0.225:9021/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
