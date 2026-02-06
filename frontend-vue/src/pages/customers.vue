@@ -414,7 +414,7 @@ watch(sorting, () => {
         </template>
 
         <template #right>
-          <UButton label="New Employee" icon="i-lucide-plus" class="cursor-pointer" @click="openCreateModal" />
+          <UButton v-if="userRole === 'admin' || userRole === 'hr'" label="New Employee" icon="i-lucide-plus" class="cursor-pointer" @click="openCreateModal" />
           <UsersAddModal v-model="showModal" :employeeId="selectedEmployeeId" :initialData="selectedEmployeeData" />
         </template>
       </UDashboardNavbar>

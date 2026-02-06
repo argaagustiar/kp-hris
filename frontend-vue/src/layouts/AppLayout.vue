@@ -21,43 +21,47 @@ watch(() => route.fullPath, () => {
 })
 
 const links = computed<NavigationMenuItem[][]>(() => [
-  [{
-    label: 'Home',
-    icon: 'i-lucide-house',
-    to: '/'
-  }, {
-    label: 'Inbox',
-    icon: 'i-lucide-inbox',
-    to: '/inbox',
-    badge: '4'
-  }, {
+  [
+  //   {
+  //   label: 'Home',
+  //   icon: 'i-lucide-house',
+  //   to: '/'
+  // }, {
+  //   label: 'Inbox',
+  //   icon: 'i-lucide-inbox',
+  //   to: '/inbox',
+  //   badge: '4'
+  // }, 
+  {
     label: 'Employees',
     icon: 'i-lucide-users',
     to: '/employees'
-  }, {
-    label: 'Settings',
-    icon: 'i-lucide-settings',
-    defaultOpen: true,
-    children: [{
-      label: 'General',
-      to: '/settings',
-      exact: true
-    }, {
-      label: 'Members',
-      to: '/settings/members'
-    }, {
-      label: 'Notifications',
-      to: '/settings/notifications'
-    }, {
-      label: 'Security',
-      to: '/settings/security'
-    }]
-  },
-  {
-    label: 'Form',
-    icon: 'i-lucide-form',
-    to: '/form'
-  }],
+  }
+  // , {
+  //   label: 'Settings',
+  //   icon: 'i-lucide-settings',
+  //   defaultOpen: true,
+  //   children: [{
+  //     label: 'General',
+  //     to: '/settings',
+  //     exact: true
+  //   }, {
+  //     label: 'Members',
+  //     to: '/settings/members'
+  //   }, {
+  //     label: 'Notifications',
+  //     to: '/settings/notifications'
+  //   }, {
+  //     label: 'Security',
+  //     to: '/settings/security'
+  //   }]
+  // },
+  // {
+  //   label: 'Form',
+  //   icon: 'i-lucide-form',
+  //   to: '/form'
+  // }
+  ],
   [
     // {
     //   label: 'Feedback',

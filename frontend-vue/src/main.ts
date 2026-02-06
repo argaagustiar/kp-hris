@@ -13,7 +13,8 @@ app.use(pinia)
 
 const routes = [
   { path: '/login', component: () => import('./pages/login.vue'), meta: { layout: 'AuthLayout' } },
-  { path: '/', component: () => import('./pages/index.vue'), meta: { layout: 'AppLayout', requiresAuth: true } },
+  // { path: '/', component: () => import('./pages/index.vue'), meta: { layout: 'AppLayout', requiresAuth: true } },
+  { path: '/', component: () => import('./pages/customers.vue'), meta: { layout: 'AppLayout', requiresAuth: true } },
   { path: '/inbox', component: () => import('./pages/inbox.vue'), meta: { layout: 'AppLayout', requiresAuth: true } },
   { path: '/employees', component: () => import('./pages/customers.vue'), meta: { layout: 'AppLayout', requiresAuth: true } },
   {
