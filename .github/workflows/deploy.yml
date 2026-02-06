@@ -1,0 +1,48 @@
+name: Build and Push to QNAP
+
+on:
+  push:
+    branches: [ "main" ] # Trigger setiap ada push ke main
+
+env:
+  REGISTRY: ghcr.io
+  # Ganti 'argaagustiar' dengan username githubmu, huruf kecil semua
+  IMAGE_NAME: ${{ github.repository }} 
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }} # Mengambil secret dari Tahap 1
+
+      # --- BUILD BACKEND ---
+      - name: Build and push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend-laravel
+          file: ./backend-laravel/Dockerfile
+          push: true
+          # Image akan bernama: ghcr.io/username/repo/backend:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/backend:latest
+
+      # --- BUILD FRONTEND ---
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend-vue
+          file: ./frontend-vue/Dockerfile
+          push: true
+          # Image akan bernama: ghcr.io/username/repo/frontend:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend:latest
