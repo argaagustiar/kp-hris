@@ -31,9 +31,9 @@ const links = computed<NavigationMenuItem[][]>(() => [
     to: '/inbox',
     badge: '4'
   }, {
-    label: 'Customers',
+    label: 'Employees',
     icon: 'i-lucide-users',
-    to: '/customers'
+    to: '/employees'
   }, {
     label: 'Settings',
     icon: 'i-lucide-settings',
@@ -52,6 +52,11 @@ const links = computed<NavigationMenuItem[][]>(() => [
       label: 'Security',
       to: '/settings/security'
     }]
+  },
+  {
+    label: 'Form',
+    icon: 'i-lucide-form',
+    to: '/form'
   }],
   [
     // {

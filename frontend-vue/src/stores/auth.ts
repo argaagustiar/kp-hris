@@ -54,8 +54,9 @@ export const useAuthStore = defineStore('auth', {
         await authApi.get('sanctum/csrf-cookie');
         const response = await api.post('/login', credentials)
 
-        await this.getMe(); 
+        this.user = response.data;
         this.isAuthenticated = true;
+        localStorage.setItem('user', JSON.stringify(this.user));
 
         return response.data;
       } catch (error) {
@@ -82,7 +83,7 @@ export const useAuthStore = defineStore('auth', {
     async getMe() {
       try {
         const response = await api.get('/me')
-        this.user = response.data.user
+        this.user = response.data
         localStorage.setItem('user', JSON.stringify(this.user))
         return response.data
       } catch (error) {

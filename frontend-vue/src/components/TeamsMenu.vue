@@ -7,10 +7,10 @@ defineProps<{
 
 // Data tim sekarang hanya digunakan untuk ditampilkan, tidak untuk menu
 const team = ref({
-  label: 'Vue App',
+  label: 'HRIS',
   avatar: {
-    src: 'https://github.com/vuejs.png',
-    alt: 'Vue'
+    src: '/logo-kane.webp',
+    alt: 'Kane Package'
   }
 })
 

@@ -9,6 +9,7 @@ const toast = useToast()
 const router = useRouter()
 const authStore = useAuthStore()
 const errors = ref({})
+const isLoading = ref(false)
 
 const fields = [{
   name: 'login',
@@ -32,6 +33,7 @@ type Schema = z.output<typeof schema>
 
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
     errors.value = {}
+    isLoading.value = true
     try {
     await authStore.login(payload.data)
     toast.add({
@@ -42,23 +44,14 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
         })
         router.push('/')
     } catch (error: any) {
-        if (error.response?.data?.errors) {
-        errors.value = error.response.data.errors
-        } else if (error.response?.data?.message) {
-        toast.add({
-            // Diperbaiki
-            title: 'Error',
-            description: error.response.data.message,
-            color: 'error',
-        })
-        } else {
-        toast.add({
-            // Diperbaiki
-            title: 'Error',
-            description: 'Login failed',
-            color: 'error',
-        })
-        }
+      console.error('Login error:', error)
+      toast.add({
+        title: error?.message,
+        description: error?.response?.data?.message || 'An error occurred during login.',
+        color: 'error',
+      })
+    } finally {
+        isLoading.value = false
     }
 }
 </script>
@@ -69,6 +62,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
       <UAuthForm
         :schema="schema"
         :fields="fields"
+        :loading="isLoading"
         title="Log In"
         icon="i-lucide-user"
         @submit="onSubmit"

@@ -21,10 +21,10 @@ const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 
 const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone']
 
 const user = ref({
-  name: authStore.user?.username,
+  name: authStore.user?.name,
   avatar: {
     src: '',
-    alt: authStore.user?.username
+    alt: authStore.user?.name
   }
 })
 

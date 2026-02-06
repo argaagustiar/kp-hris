@@ -23,31 +23,24 @@ class AuthController extends Controller
     public function login(Request $request): JsonResponse
     {
         // Validation
-        $request->validate([
+        $credentials = $request->validate([
             'login' => ['required', 'string'],
             'password' => ['required'],
         ]);
 
-        $login = $request->login;
-        $password = $request->password;
+        // Check if login is email or username
+        $loginField = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
 
-        // Find User
-        $user = User::where('username', $login)
-            ->orWhere('email', $login)
-            ->first();
+        // Authentication attempt
+        if (Auth::attempt([$loginField => $credentials['login'], 'password' => $credentials['password']])) {
+            $request->session()->regenerate();
 
-        // User Authentication
-        if (!$user || !Hash::check($password, $user->password)) {
-            throw ValidationException::withMessages([
-                'login' => ['The provided credentials are incorrect.'],
-                'password' => ['The provided credentials are incorrect.'],
-            ]);
+            return response()->json(Auth::user());
         }
 
-        // Regenerate session to prevent fixation
-        $request->session()->regenerate();
-
-        return response()->json(Auth::user());
+        throw ValidationException::withMessages([
+            'login' => ['The provided credentials are incorrect.'],
+        ]);
     }
 
     /**
