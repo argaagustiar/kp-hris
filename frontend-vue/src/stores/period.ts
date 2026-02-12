@@ -47,7 +47,17 @@ export const usePeriodStore = defineStore('period', {
                 // params bisa berisi { search: 'budi' }
                 const response = await api.get('/periods', { params })
                 this.periods = response.data.data
-                console.log('Fetched Periods:', this.periods)
+                
+                // Update pagination info jika ada
+                if (response.data.meta) {
+                    this.pagination = {
+                        page: response.data.meta.current_page || 1,
+                        total: response.data.meta.total || 0,
+                        perPage: response.data.meta.per_page || 10
+                    }
+                }
+                
+                console.log('Fetched Periods:', this.periods, 'Pagination:', this.pagination)
                 return response.data
             } catch (error: any) {
                 this.error = error.response?.data?.message || 'Gagal mengambil data periode'

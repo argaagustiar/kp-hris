@@ -15,7 +15,7 @@ class PositionController extends Controller
     {
         $query = Position::withCount('employees');
 
-        if ($request->has('search')) {
+        if ($request->has('search') && !empty($request->search)) {
             $query->where('title', 'ilike', '%' . $request->search . '%');
         }
 

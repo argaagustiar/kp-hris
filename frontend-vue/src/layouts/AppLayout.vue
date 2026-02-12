@@ -4,10 +4,13 @@ import { useRoute } from 'vue-router'
 import { useStorage } from '@vueuse/core'
 import type { NavigationMenuItem } from '@nuxt/ui'
 import { useColorMode } from '@vueuse/core'
+import { useAuthStore } from '../stores/auth'
 
 const toast = useToast()
 const route = useRoute()
 const colorMode = useColorMode()
+const authStore = useAuthStore()
+const userRole = computed(() => authStore.user?.role || 'guest')
 
 const appConfig = useAppConfig()
 
@@ -20,72 +23,39 @@ watch(() => route.fullPath, () => {
   open.value = false
 })
 
-const links = computed<NavigationMenuItem[][]>(() => [
-  [
-  //   {
-  //   label: 'Home',
-  //   icon: 'i-lucide-house',
-  //   to: '/'
-  // }, {
-  //   label: 'Inbox',
-  //   icon: 'i-lucide-inbox',
-  //   to: '/inbox',
-  //   badge: '4'
-  // }, 
-  {
-    label: 'Employees',
-    icon: 'i-lucide-users',
-    to: '/employees'
-  }
-  // , {
-  //   label: 'Settings',
-  //   icon: 'i-lucide-settings',
-  //   defaultOpen: true,
-  //   children: [{
-  //     label: 'General',
-  //     to: '/settings',
-  //     exact: true
-  //   }, {
-  //     label: 'Members',
-  //     to: '/settings/members'
-  //   }, {
-  //     label: 'Notifications',
-  //     to: '/settings/notifications'
-  //   }, {
-  //     label: 'Security',
-  //     to: '/settings/security'
-  //   }]
-  // },
-  // {
-  //   label: 'Form',
-  //   icon: 'i-lucide-form',
-  //   to: '/form'
-  // }
-  ],
-  [
-    // {
-    //   label: 'Feedback',
-    //   icon: 'i-lucide-message-circle',
-    //   to: 'https://github.com/nuxt-ui-templates/dashboard-vue',
-    //   target: '_blank'
-    // }, 
-    // {
-    //   label: 'Help & Support',
-    //   icon: 'i-lucide-info',
-    //   to: 'https://github.com/nuxt/ui',
-    //   target: '_blank'
-    // }, 
+const links = computed<NavigationMenuItem[][]>(() => {
+  const firstSection = [
     {
-      label: colorMode.value === 'dark' ? 'Dark Mode' : 'Light Mode',
-      icon: colorMode.value === 'dark' ? 'i-lucide-moon' : 'i-lucide-sun',
-      checked: colorMode.value === 'dark',
-      onSelect: (e: Event) => {
-        e.preventDefault()
-        colorMode.value = colorMode.value === 'dark' ? 'light' : 'dark'
-      }
+      label: 'Employees',
+      icon: 'i-lucide-users',
+      to: '/employees'
     }
   ]
-])
+  
+  // Only show Period menu for admin/hr role
+  if (userRole.value === 'admin' || userRole.value === 'hr') {
+    firstSection.push({
+      label: 'Period',
+      icon: 'i-lucide-calendar',
+      to: '/period'
+    })
+  }
+  
+  return [
+    firstSection,
+    [
+      {
+        label: colorMode.value === 'dark' ? 'Dark Mode' : 'Light Mode',
+        icon: colorMode.value === 'dark' ? 'i-lucide-moon' : 'i-lucide-sun',
+        checked: colorMode.value === 'dark',
+        onSelect: (e: Event) => {
+          e.preventDefault()
+          colorMode.value = colorMode.value === 'dark' ? 'light' : 'dark'
+        }
+      }
+    ]
+  ]
+})
 
 const groups = computed(() => [{
   id: 'links',

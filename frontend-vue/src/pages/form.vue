@@ -14,8 +14,10 @@ import { useEmployeeStore } from "../stores/employee";
 import { usePeriodStore } from "../stores/period";
 import { useAuthStore } from "../stores/auth";
 import { useEvaluationStore } from "../stores/evaluation";
+import { api } from "../services/api";
 
 const route = useRoute();
+const router = useRouter();
 
 const employeeStore = useEmployeeStore();
 const periodStore = usePeriodStore();
@@ -37,10 +39,10 @@ const schema = z.object({
     (val) => val instanceof CalendarDate,
     "Date is required"
   ),
-  // end_contract: z.custom<CalendarDate>(
-  //   (val) => val instanceof CalendarDate,
-  //   "Date is required"
-  // ),
+  end_contract: z.custom<CalendarDate>(
+    (val) => val instanceof CalendarDate,
+    "Format date is required"
+  ).optional(),
   period_cutoff: z
     .object({
       start: z.custom<CalendarDate>(
@@ -110,6 +112,20 @@ const schema = z.object({
     .refine((val) => val !== undefined && val !== null && val !== "", {
       message: "Required",
     }),
+  comments: z.string().optional(),
+  sick: z.number().optional(),
+  work_accident: z.number().optional(),
+  permit: z.number().optional(),
+  awol: z.number().optional(),
+  late_permit: z.number().optional(),
+  early_leave: z.number().optional(),
+  annual_leave: z.number().optional(),
+  late: z.number().optional(),
+  warning_letter_1: z.number().optional(),
+  warning_letter_2: z.number().optional(),
+  warning_letter_3: z.number().optional(),
+  subordinate_late: z.number().optional(),
+  subordinate_awol: z.number().optional(),
 });
 
 type Schema = z.output<typeof schema>;
@@ -143,19 +159,20 @@ const state = reactive<Partial<Schema>>({
   question_8: 0,
   question_9: 0,
   question_10: 0,
-  att_sick: 0,
-  att_accident: 0,
-  att_permit: 0,
-  att_awol: 0,
-  att_late_permit: 0,
-  att_early_leave: 0,
-  att_annual_leave: 0,
-  att_late: 0,
-  warn_1: 0,
-  warn_2: 0,
-  warn_3: 0,
-  dept_sub_late: 0,
-  dept_sub_awol: 0,
+  sick: 0,
+  work_accident: 0,
+  permit: 0,
+  awol: 0,
+  late_permit: 0,
+  early_leave: 0,
+  annual_leave: 0,
+  late: 0,
+  warning_letter_1: 0,
+  warning_letter_2: 0,
+  warning_letter_3: 0,
+  subordinate_late: 0,
+  subordinate_awol: 0,
+  comments: "",
 });
 
 // Total A (Sum of Questions 1-10)
@@ -177,31 +194,31 @@ const totalA = computed(() => {
 // Total B (Attendance)
 const totalB = computed(() => {
   return (
-    Number(state.att_sick) * POINTS.attendance.sick +
-    Number(state.att_accident) * POINTS.attendance.accident +
-    Number(state.att_permit) * POINTS.attendance.permit +
-    Number(state.att_awol) * POINTS.attendance.awol +
-    Number(state.att_late_permit) * POINTS.attendance.late_permit +
-    Number(state.att_early_leave) * POINTS.attendance.early_leave +
-    Number(state.att_annual_leave) * POINTS.attendance.annual_leave +
-    Number(state.att_late) * POINTS.attendance.late
+    Number(state.sick) * POINTS.attendance.sick +
+    Number(state.work_accident) * POINTS.attendance.work_accident +
+    Number(state.permit) * POINTS.attendance.permit +
+    Number(state.awol) * POINTS.attendance.awol +
+    Number(state.late_permit) * POINTS.attendance.late_permit +
+    Number(state.early_leave) * POINTS.attendance.early_leave +
+    Number(state.annual_leave) * POINTS.attendance.annual_leave +
+    Number(state.late) * POINTS.attendance.late
   );
 });
 
 // Total C (Warning Letter)
 const totalC = computed(() => {
   return (
-    Number(state.warn_1) * POINTS.warning.first +
-    Number(state.warn_2) * POINTS.warning.second +
-    Number(state.warn_3) * POINTS.warning.third
+    Number(state.warning_letter_1) * POINTS.warning.first +
+    Number(state.warning_letter_2) * POINTS.warning.second +
+    Number(state.warning_letter_3) * POINTS.warning.third
   );
 });
 
 // Total D (Dept Head)
 const totalD = computed(() => {
   return (
-    Number(state.dept_sub_late) * POINTS.dept_head.sub_late +
-    Number(state.dept_sub_awol) * POINTS.dept_head.sub_awol
+    Number(state.subordinate_late) * POINTS.dept_head.sub_late +
+    Number(state.subordinate_awol) * POINTS.dept_head.sub_awol
   );
 });
 
@@ -216,7 +233,7 @@ const rangeValue = reactive([1, 2, 3, 4, 5]);
 const POINTS = {
   attendance: {
     sick: -0.1,
-    accident: -0.5,
+    work_accident: -0.5,
     permit: -0.5,
     awol: -5.0,
     late_permit: -0.25,
@@ -240,6 +257,7 @@ const toast = useToast();
 const formatDate = new DateFormatter("id-ID", { dateStyle: "medium" });
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
+  console.log(isFormValid.value);
   if (!isFormValid.value) {
     toast.add({
       title: "Error",
@@ -290,6 +308,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     question_8: event.data.question_8,
     question_9: event.data.question_9,
     question_10: event.data.question_10,
+    comments: event.data.comments || "",
   }
   console.log("Payload: ", payload)
 
@@ -303,6 +322,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       evaluationId.value = evaluation.data.id;
       toast.add({ title: 'Success', description: 'Evaluation created successfully', color: 'success' });
     }
+
+    router.push(`/employees`);
   } catch (error) {
     console.error('Error saving evaluation:', error)
     toast.add({ 
@@ -350,6 +371,20 @@ async function loadEmployeeData() {
     state.question_8 = String(evalData.question_8);
     state.question_9 = String(evalData.question_9);
     state.question_10 = String(evalData.question_10);
+    state.comments = evalData.comments || "";
+  }
+
+  const attendanceRecord = await api.get(`/attendance-records/period/${periodId}/employee/${employeeId}`);
+  if (attendanceRecord && attendanceRecord.data && attendanceRecord.data.data) {
+    console.log("Attendance Record: ", attendanceRecord.data.data)
+    state.sick = Number(attendanceRecord.data.data.sick) || 0;
+    state.work_accident = Number(attendanceRecord.data.data.work_accident) || 0;
+    state.permit = Number(attendanceRecord.data.data.permit) || 0;
+    state.awol = Number(attendanceRecord.data.data.awol) || 0;
+    state.late_permit = Number(attendanceRecord.data.data.late_permit) || 0;
+    state.early_leave = Number(attendanceRecord.data.data.early_leave) || 0;
+    state.annual_leave = Number(attendanceRecord.data.data.annual_leave) || 0;
+    state.late = Number(attendanceRecord.data.data.late) || 0;
   }
 }
 
@@ -937,42 +972,42 @@ if (employeeId) {
                   v-for="(item, idx) in [
                     {
                       label: 'Sakit (Sick)',
-                      key: 'att_sick',
+                      key: 'sick',
                       point: POINTS.attendance.sick,
                     },
                     {
                       label: 'Kecelakaan Kerja',
-                      key: 'att_accident',
-                      point: POINTS.attendance.accident,
+                      key: 'work_accident',
+                      point: POINTS.attendance.work_accident,
                     },
                     {
                       label: 'Izin (Permit)',
-                      key: 'att_permit',
+                      key: 'permit',
                       point: POINTS.attendance.permit,
                     },
                     {
                       label: 'Mangkir (AWOL)',
-                      key: 'att_awol',
+                      key: 'awol',
                       point: POINTS.attendance.awol,
                     },
                     {
                       label: 'Izin Terlambat',
-                      key: 'att_late_permit',
+                      key: 'late_permit',
                       point: POINTS.attendance.late_permit,
                     },
                     {
                       label: 'Izin Pulang Cepat',
-                      key: 'att_early_leave',
+                      key: 'early_leave',
                       point: POINTS.attendance.early_leave,
                     },
                     {
                       label: 'Cuti Tahunan',
-                      key: 'att_annual_leave',
+                      key: 'annual_leave',
                       point: POINTS.attendance.annual_leave,
                     },
                     {
                       label: 'Terlambat (Late)',
-                      key: 'att_late',
+                      key: 'late',
                       point: POINTS.attendance.late,
                     },
                   ]"
@@ -985,13 +1020,14 @@ if (employeeId) {
                   <td class="p-2">
                     <UInputNumber
                       v-model="state[item.key as keyof typeof state]"
-                      size="xs"
+                      size="s"
                       :min="0"
                       class="w-16 text-center"
                       :ui="{ 
                         increment: 'hidden', 
                         decrement: 'hidden',
                       }"
+                      disabled
                     />
                   </td>
                   <td class="p-2 text-right font-medium">
@@ -1031,17 +1067,17 @@ if (employeeId) {
                     v-for="(item, idx) in [
                       {
                         label: 'Peringatan Pertama',
-                        key: 'warn_1',
+                        key: 'warning_letter_1',
                         point: POINTS.warning.first,
                       },
                       {
                         label: 'Peringatan Kedua',
-                        key: 'warn_2',
+                        key: 'warning_letter_2',
                         point: POINTS.warning.second,
                       },
                       {
                         label: 'Peringatan Ketiga',
-                        key: 'warn_3',
+                        key: 'warning_letter_3',
                         point: POINTS.warning.third,
                       },
                     ]"
@@ -1054,13 +1090,14 @@ if (employeeId) {
                     <td class="p-2">
                       <UInputNumber
                         v-model="state[item.key as keyof typeof state]"
-                        size="xs"
+                        size="s"
                         :min="0"
                         class="w-16 text-center"
                         :ui="{ 
                           increment: 'hidden', 
                           decrement: 'hidden',
                         }"
+                        disabled
                       />
                     </td>
                     <td class="p-2 text-right font-medium">
@@ -1099,12 +1136,12 @@ if (employeeId) {
                     v-for="(item, idx) in [
                       {
                         label: 'Bawahan Terlambat',
-                        key: 'dept_sub_late',
+                        key: 'subordinate_late',
                         point: POINTS.dept_head.sub_late,
                       },
                       {
                         label: 'Bawahan Mangkir',
-                        key: 'dept_sub_awol',
+                        key: 'subordinate_awol',
                         point: POINTS.dept_head.sub_awol,
                       },
                     ]"
@@ -1117,13 +1154,14 @@ if (employeeId) {
                     <td class="p-2">
                       <UInputNumber
                         v-model="state[item.key as keyof typeof state]"
-                        size="xs"
+                        size="s"
                         :min="0"
                         class="w-16 text-center"
                         :ui="{ 
                           increment: 'hidden', 
                           decrement: 'hidden',
                         }"
+                        disabled
                       />
                     </td>
                     <td class="p-2 text-right font-medium">
@@ -1152,8 +1190,22 @@ if (employeeId) {
             </div>
           </div>
         </div>
+        <div>
+          <div
+            class="bg-gray-100 dark:bg-gray-800 p-2 font-bold border-b border-gray-200 dark:border-gray-700"
+          >
+            COMMENT / NOTE / REMARKS
+          </div>
+          <UTextarea
+            v-model="state.comments"
+            name="comments"
+            label="Comments"
+            rows="4"
+            class="w-full"
+          />
+        </div>
 
-        <UButton type="submit" class="cursor-pointer" :loading="isLoading" :disabled="!isFormValid"> 
+        <UButton type="submit" class="cursor-pointer" :loading="isLoading"> 
           Submit
         </UButton>
       </UForm>

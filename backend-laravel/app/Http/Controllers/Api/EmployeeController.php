@@ -15,10 +15,10 @@ class EmployeeController extends Controller
     // GET /api/employees
     public function index(Request $request)
     {
-        $query = Employee::with(['position', 'department', 'managers']);
+        $query = Employee::with(['position', 'department', 'subordinates', 'evaluator']);
 
         // Fitur Pencarian
-        if ($request->has('search')) {
+        if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'ilike', "%{$search}%")
@@ -30,15 +30,23 @@ class EmployeeController extends Controller
 
         if ($request->has('role')) {
             if ($request->role == 'employee') {
-                $query->whereHas('managers', function($mgrQuery) use ($request) {
-                    $mgrQuery->where('manager_id', $request->user()->employee_id);
-                });
+                $query->whereHas('subordinates', function($mgrQuery) use ($request) {
+                    $mgrQuery->where('employee_id', $request->user()->employee_id);
+                })
+                ->orWhere('id', $request->user()->employee_id);
             }
         }
 
         // Filter Active Only (Optional)
         if ($request->has('active_only')) {
             $query->where('is_active', true);
+        }
+
+        if ($request->has('period_id')) {
+            $query->with(['evaluator' => function($evalQuery) use ($request) {
+                $evalQuery->where('period_id', $request->period_id)
+                          ->where('evaluator_id', $request->user()->employee_id);
+            }]);
         }
 
         $sortBy = $request->input('sort_by', 'name'); 

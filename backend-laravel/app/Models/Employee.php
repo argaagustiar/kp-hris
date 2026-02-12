@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -87,5 +88,10 @@ class Employee extends Authenticatable
     public function user(): HasOne
     {
         return $this->hasOne(User::class, 'employee_id', 'id');
+    }
+
+    public function evaluator(): HasMany
+    {
+        return $this->hasMany(Evaluation::class, 'evaluator_id', 'id');
     }
 }

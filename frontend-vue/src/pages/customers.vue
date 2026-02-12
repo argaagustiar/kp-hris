@@ -17,6 +17,7 @@ import { searchForWorkspaceRoot } from 'vite';
 import { useEmployeeStore } from '../stores/employee'
 import { usePeriodStore } from '../stores/period';
 import { useAuthStore } from '../stores/auth';
+import { api } from '../services/api';
 
 const employeeStore = useEmployeeStore()
 const periodStore = usePeriodStore()
@@ -145,6 +146,32 @@ function getRowItems(row: Row<User>) {
         })
       }
     })
+
+    // items.push({
+    //   label: 'Delete Evaluation',
+    //   icon: 'i-lucide-trash',
+    //   class: 'cursor-pointer',
+    //   color: 'error',
+    //   onSelect() {
+    //     selectedEmployeeId.value = row.original.current_evaluation;
+    //     api.delete(`/evaluations/${selectedEmployeeId.value}`)
+    //       .then(() => {
+    //         toast.add({
+    //           title: 'Evaluation deleted',
+    //           description: 'The evaluation has been deleted.'
+    //         });
+    //         loadData(); // Refresh data setelah penghapusan
+    //       })
+    //       .catch((error) => {
+    //         console.error('Error deleting evaluation:', error);
+    //         toast.add({
+    //           title: 'Error',
+    //           description: 'Failed to delete evaluation.',
+    //           color: 'error'
+    //         });
+    //       });
+    //   }
+    // })
   }
 
   // 4. Kembalikan array final
@@ -152,36 +179,36 @@ function getRowItems(row: Row<User>) {
 }
 
 const columns: TableColumn<Department>[] = [
-  {
-    id: 'select',
-    header: ({ table }) =>
-      h(UCheckbox, {
-        'modelValue': table.getIsSomePageRowsSelected()
-          ? 'indeterminate'
-          : table.getIsAllPageRowsSelected(),
-        'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-          table.toggleAllPageRowsSelected(!!value),
-        'ariaLabel': 'Select all',
-        'class': 'cursor-pointer',
-        'ui': { 
-          base: 'cursor-pointer', 
-          wrapper: 'items-center cursor-pointer',
-          container: 'cursor-pointer'
-        }
-      }),
-    cell: ({ row }) =>
-      h(UCheckbox, {
-        'modelValue': row.getIsSelected(),
-        'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
-        'ariaLabel': 'Select row',
-        'class': 'cursor-pointer',
-        'ui': { 
-          base: 'cursor-pointer', 
-          wrapper: 'items-center cursor-pointer',
-          container: 'cursor-pointer'
-        }
-      })
-  },
+  // {
+  //   id: 'select',
+  //   header: ({ table }) =>
+  //     h(UCheckbox, {
+  //       'modelValue': table.getIsSomePageRowsSelected()
+  //         ? 'indeterminate'
+  //         : table.getIsAllPageRowsSelected(),
+  //       'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+  //         table.toggleAllPageRowsSelected(!!value),
+  //       'ariaLabel': 'Select all',
+  //       'class': 'cursor-pointer',
+  //       'ui': { 
+  //         base: 'cursor-pointer', 
+  //         wrapper: 'items-center cursor-pointer',
+  //         container: 'cursor-pointer'
+  //       }
+  //     }),
+  //   cell: ({ row }) =>
+  //     h(UCheckbox, {
+  //       'modelValue': row.getIsSelected(),
+  //       'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
+  //       'ariaLabel': 'Select row',
+  //       'class': 'cursor-pointer',
+  //       'ui': { 
+  //         base: 'cursor-pointer', 
+  //         wrapper: 'items-center cursor-pointer',
+  //         container: 'cursor-pointer'
+  //       }
+  //     })
+  // },
   // {
   //   accessorKey: 'id',
   //   header: 'ID'
@@ -311,6 +338,31 @@ const columns: TableColumn<Department>[] = [
     },
   },
   // {
+  //   accessorKey: 'status',
+  //   header: ({ column }) => {
+  //     return h(UButton, {
+  //       color: 'neutral',
+  //       variant: 'ghost',
+  //       label: 'Status',
+  //     })
+  //   },
+  // },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      return h(
+        UBadge,
+        {
+          variant: "subtle",
+          color: row.original.current_evaluation ? "success" : "neutral",
+          class: "capitalize",
+        },
+        () => (row.original.current_evaluation ? "Done" : "Pending")
+      );
+    },
+  },
+  // {
   //   accessorKey: 'end_contract_date',
   //   header: ({ column }) => {
   //     const isSorted = column.getIsSorted()
@@ -379,7 +431,8 @@ const pagination = ref({
 async function loadData() {
   const sort = sorting.value[0]
 
-  periodStore.fetchPeriods()
+  await periodStore.fetchPeriods()
+  selectedPeriodId.value = periodStore.periodOptions[0]?.id || undefined
     
   await employeeStore.fetchEmployees({
     page: page.value,
@@ -388,6 +441,7 @@ async function loadData() {
     sort_direction: sort?.desc ? 'desc' : 'asc',
     search: search.value,
     role: authStore.user?.role || null,
+    period_id: selectedPeriodId.value || null
   })
 }
 

@@ -29,6 +29,8 @@ const routes = [
     meta: { layout: 'AppLayout', requiresAuth: true }
   },
   { path: '/form', component: () => import('./pages/form.vue'), meta: { layout: 'AppLayout', requiresAuth: true } },
+  { path: '/period', component: () => import('./pages/period.vue'), meta: { layout: 'AppLayout', requiresAuth: true } },
+  { path: '/attendance', component: () => import('./pages/attendance.vue'), meta: { layout: 'AppLayout', requiresAuth: true } },
 ]
 
 const router = createRouter({ routes, history: createWebHistory() })

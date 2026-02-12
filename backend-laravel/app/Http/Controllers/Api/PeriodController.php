@@ -15,7 +15,7 @@ class PeriodController extends Controller
     {
         $query = Period::query();
 
-        if ($request->has('search')) {
+        if ($request->has('search') && !empty($request->search)) {
             $query->where('description', 'ilike', '%' . $request->search . '%');
         }
 

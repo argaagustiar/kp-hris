@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AttendaceRecordController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\EvaluationController;
@@ -22,5 +23,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('departments', DepartmentController::class);
     Route::apiResource('positions', PositionController::class);
     Route::apiResource('periods', PeriodController::class);
-    Route::apiResource('evaluations', EvaluationController::class); 
+    Route::apiResource('evaluations', EvaluationController::class);
+    Route::apiResource('attendance-records', AttendaceRecordController::class);
+    
+    // Attendance Records Import
+    Route::post('/attendance-records/import', [AttendaceRecordController::class, 'import']);
+    
+    // Attendance Records by Period and Employee
+    Route::get('/attendance-records/period/{period_id}/employee/{employee_id}', 
+        [AttendaceRecordController::class, 'showByPeriodEmployee']);
 });

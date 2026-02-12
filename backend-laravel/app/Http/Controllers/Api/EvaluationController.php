@@ -20,7 +20,7 @@ class EvaluationController extends Controller
     {
         $query = Evaluation::with(['period', 'employee', 'evaluator']);
 
-        if ($request->has('search')) {
+        if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->WhereHas('employee', function($posQuery) use ($search) {

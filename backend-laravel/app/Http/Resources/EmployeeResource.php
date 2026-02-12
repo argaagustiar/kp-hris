@@ -50,6 +50,8 @@ class EmployeeResource extends JsonResource
                     'reporting_type' => $mgr->pivot->reporting_type // Data dari Pivot
                 ];
             }),
+
+            'current_evaluation' => $this->evaluator->first()->id ?? null,
         ];
     }
 }

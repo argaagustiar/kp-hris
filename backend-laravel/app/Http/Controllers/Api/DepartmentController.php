@@ -15,7 +15,7 @@ class DepartmentController extends Controller
     {
         $query = Department::with('parent'); // Eager load parent
 
-        if ($request->has('search')) {
+        if ($request->has('search') && !empty($request->search)) {
             $query->where('name', 'ilike', '%' . $request->search . '%');
         }
 
