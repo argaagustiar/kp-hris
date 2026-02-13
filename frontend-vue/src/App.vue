@@ -11,6 +11,7 @@ appConfig.ui.colors.primary = 'blue'
 
 const route = useRoute()
 const authStore = useAuthStore()
+const toaster = { position: "top-center" }
 // Daftar layout yang tersedia
 const layouts = {
   AppLayout,
@@ -25,5 +26,7 @@ const currentLayout = computed(() => {
 </script>
 
 <template>
-  <component :is="currentLayout" v-if="isReady" />
+  <UApp :toaster="toaster">
+    <component :is="currentLayout" v-if="isReady" />
+  </UApp>
 </template>

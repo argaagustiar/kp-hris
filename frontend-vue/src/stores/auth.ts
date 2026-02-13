@@ -92,5 +92,18 @@ export const useAuthStore = defineStore('auth', {
         throw error
       }
     },
-  }
+
+    // Change password
+    async changePassword(passwordData) {
+      this.loading = true;
+      try {
+        const response = await api.post('/change-password', passwordData);
+        this.loading = false;
+        return response.data;
+      } catch (error) {
+        this.loading = false;
+        throw error;
+      }
+    },
+  },
 })
