@@ -98,23 +98,8 @@ class AttendaceRecordController extends Controller
      */
     public function import(ImportAttendanceRecordRequest $request)
     {
-        // Store file first to ensure it exists
-        $file = $request->file('file');
-        $storedPath = $file->storeAs('temp', $file->hashName(), 'local');
-        
-        // Verify file was stored
-        if (!$storedPath) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to store uploaded file',
-                'imported_count' => 0,
-                'total_rows' => 0,
-                'errors' => ['File storage failed'],
-            ], 422);
-        }
-
         $result = $this->importService->import(
-            $file,
+            $request->file('file'),
             $request->input('period_id')
         );
 
@@ -123,5 +108,19 @@ class AttendaceRecordController extends Controller
         }
 
         return response()->json($result, 422);
+    }
+
+    /**
+     * Download attendance upload template
+     */
+    public function downloadTemplate()
+    {
+        $templatePath = public_path('templates/upload attendance template.xlsx');
+
+        if (!file_exists($templatePath)) {
+            return response()->json(['message' => 'Template file not found'], 404);
+        }
+
+        return response()->download($templatePath, 'upload attendance template.xlsx');
     }
 }

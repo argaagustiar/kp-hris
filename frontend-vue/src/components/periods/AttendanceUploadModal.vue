@@ -21,6 +21,7 @@ const toast = useToast()
 // Upload state
 const selectedFile = ref<File | null>(null)
 const isLoading = ref(false)
+const isDownloading = ref(false)
 
 function handleFileSelect(event: Event) {
   const target = event.target as HTMLInputElement
@@ -93,6 +94,39 @@ async function handleUpload() {
 function clearFile() {
   selectedFile.value = null
 }
+
+async function downloadTemplate() {
+  isDownloading.value = true
+  try {
+    const response = await api.get('/attendance-records/template/download', {
+      responseType: 'blob'
+    })
+    
+    const url = window.URL.createObjectURL(response.data)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'upload attendance template.xlsx')
+    document.body.appendChild(link)
+    link.click()
+    link.parentElement?.removeChild(link)
+    window.URL.revokeObjectURL(url)
+    
+    toast.add({
+      title: 'Success',
+      description: 'Template downloaded successfully',
+      color: 'success'
+    })
+  } catch (error) {
+    console.error('Error downloading template:', error)
+    toast.add({
+      title: 'Download Error',
+      description: 'Failed to download template. Please try again.',
+      color: 'error'
+    })
+  } finally {
+    isDownloading.value = false
+  }
+}
 </script>
 
 <template>
@@ -104,6 +138,29 @@ function clearFile() {
   >
     <template #body>
       <div class="space-y-4">
+        <!-- Download Template Button -->
+        <div class="flex items-center justify-between bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <div>
+            <p class="text-sm font-medium text-gray-900 dark:text-white">
+              Need a template?
+            </p>
+            <p class="text-xs text-gray-600 dark:text-gray-400">
+              Download our Excel template to get started
+            </p>
+          </div>
+          <UButton
+            label="Download Template"
+            icon="i-lucide-download"
+            color="primary"
+            variant="outline"
+            size="sm"
+            :loading="isDownloading"
+            :disabled="isDownloading"
+            class="cursor-pointer flex-shrink-0"
+            @click="downloadTemplate"
+          />
+        </div>
+
         <!-- File Input Area -->
         <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
           <div class="space-y-2">

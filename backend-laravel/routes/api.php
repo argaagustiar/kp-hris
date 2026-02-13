@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/attendance-records/template/download', [AttendaceRecordController::class, 'downloadTemplate']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
