@@ -15,7 +15,7 @@ class EmployeeController extends Controller
     // GET /api/employees
     public function index(Request $request)
     {
-        $query = Employee::with(['position', 'department', 'subordinates', 'evaluator']);
+        $query = Employee::with(['position', 'department', 'subordinates']);
 
         // Fitur Pencarian
         if ($request->has('search') && !empty($request->search)) {
@@ -43,7 +43,7 @@ class EmployeeController extends Controller
         }
 
         if ($request->has('period_id')) {
-            $query->with(['evaluator' => function($evalQuery) use ($request) {
+            $query->with(['evaluations' => function($evalQuery) use ($request) {
                 $evalQuery->where('period_id', $request->period_id)
                           ->where('evaluator_id', $request->user()->employee_id);
             }]);

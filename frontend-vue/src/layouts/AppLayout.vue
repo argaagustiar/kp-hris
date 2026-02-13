@@ -11,6 +11,7 @@ const route = useRoute()
 const colorMode = useColorMode()
 const authStore = useAuthStore()
 const userRole = computed(() => authStore.user?.role || 'guest')
+const toaster = { position: "top-center" }
 
 const appConfig = useAppConfig()
 
@@ -97,7 +98,7 @@ if (cookie.value !== 'accepted') {
 
 <template>
   <Suspense>
-    <UApp>
+    <UApp :toaster="toaster">
       <UDashboardGroup unit="rem" storage="local">
         <UDashboardSidebar
           id="default"

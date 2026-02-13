@@ -112,7 +112,7 @@ const schema = z.object({
     .refine((val) => val !== undefined && val !== null && val !== "", {
       message: "Required",
     }),
-  comments: z.string().optional(),
+  comments: z.string().optional().nullable(),
   sick: z.number().optional(),
   work_accident: z.number().optional(),
   permit: z.number().optional(),
@@ -315,12 +315,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
     if (evaluationId.value) {
       await evaluationStore.updateEvaluation(evaluationId.value, payload);
-      toast.add({ title: 'Success', description: 'Evaluation updated successfully', color: 'success' });
+      toast.add({ title: 'Success', description: 'Evaluation updated successfully', color: 'success', position: 'center' });
     } else {
       const evaluation = await evaluationStore.createEvaluation(payload);
       console.log("Created Evaluation: ", evaluation)
       evaluationId.value = evaluation.data.id;
-      toast.add({ title: 'Success', description: 'Evaluation created successfully', color: 'success' });
+      toast.add({ title: 'Success', description: 'Evaluation created successfully', color: 'success', position: 'center' });
     }
 
     router.push(`/employees`);
@@ -575,7 +575,7 @@ if (employeeId) {
         </div>
         <UFormField
           name="evaluation_purpose"
-          label="Please fill check list"
+          label="Jenis Evaluasi (Evaluation Type)"
           required
           class="flex max-sm:flex-col items-center gap-4"
           :ui="{ label: 'w-64 min-w-[120px]' }"

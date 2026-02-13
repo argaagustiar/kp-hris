@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import AppLayout from './layouts/AppLayout.vue'
 import AuthLayout from './layouts/AuthLayout.vue'
 import { useAuthStore } from './stores/auth'
@@ -25,7 +25,5 @@ const currentLayout = computed(() => {
 </script>
 
 <template>
-  <UApp>
-    <component :is="currentLayout" v-if="isReady" />
-  </UApp>
+  <component :is="currentLayout" v-if="isReady" />
 </template>

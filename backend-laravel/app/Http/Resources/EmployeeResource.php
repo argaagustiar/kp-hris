@@ -51,7 +51,7 @@ class EmployeeResource extends JsonResource
                 ];
             }),
 
-            'current_evaluation' => $this->evaluator->first()->id ?? null,
+            'current_evaluation' => $this->evaluations?->first()->id ?? null,
         ];
     }
 }

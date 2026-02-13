@@ -40,7 +40,7 @@ class UpdateEvaluationRequest extends FormRequest
             'question_8' => 'required|integer',
             'question_9' => 'required|integer',
             'question_10' => 'required|integer',
-            'comments' => 'string',            
+            'comments' => 'nullable|string',            
         ];
     }
 }

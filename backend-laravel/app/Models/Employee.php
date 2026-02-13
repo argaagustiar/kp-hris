@@ -90,8 +90,11 @@ class Employee extends Authenticatable
         return $this->hasOne(User::class, 'employee_id', 'id');
     }
 
-    public function evaluator(): HasMany
+    public function evaluations(): HasMany
     {
-        return $this->hasMany(Evaluation::class, 'evaluator_id', 'id');
+        // Return evaluations for this employee (evaluations where `employee_id` == this employee's id)
+        // Previously this returned evaluations by this employee (using `evaluator_id`), which
+        // caused confusion when eager-loading `evaluator` to find evaluations *about* an employee.
+        return $this->hasMany(Evaluation::class, 'employee_id', 'id');
     }
 }
