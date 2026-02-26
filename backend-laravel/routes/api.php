@@ -34,4 +34,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Attendance Records by Period and Employee
     Route::get('/attendance-records/period/{period_id}/employee/{employee_id}', 
         [AttendaceRecordController::class, 'showByPeriodEmployee']);
+
+    // Reports
+    Route::get('/reports/evaluation-summary', [EvaluationController::class, 'evaluationSummary']);
+    Route::get('/reports/evaluation-summary/export', [EvaluationController::class, 'exportEvaluationSummary']);
+    Route::get('/reports/comments-summary', [EvaluationController::class, 'commentsSummary']);
+    Route::get('/reports/comments-summary/export', [EvaluationController::class, 'exportCommentsSummary']);
 });

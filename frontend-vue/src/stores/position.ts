@@ -26,7 +26,7 @@ export const usePositionStore = defineStore('position', {
     getters: {
         // Helper untuk dropdown (format { label, id })
         positionOptions: (state) => state.positions.map(p => ({
-            label: `${p.title} (Level ${p.level})`,
+            label: `${p.title}`,
             id: p.id
         }))
     },

@@ -31,7 +31,13 @@ class EmployeeController extends Controller
         if ($request->has('role')) {
             if ($request->role == 'employee') {
                 $query->whereHas('subordinates', function($mgrQuery) use ($request) {
-                    $mgrQuery->where('employee_id', $request->user()->employee_id);
+                    $mgrQuery->where('manager_id', $request->user()->employee_id);
+                })
+                ->orWhereHas('heads', function($mgrQuery) use ($request) {
+                    $mgrQuery->where('manager_id', $request->user()->employee_id);
+                })
+                ->orWhereHas('coworkers', function($mgrQuery) use ($request) {
+                    $mgrQuery->where('manager_id', $request->user()->employee_id);
                 })
                 ->orWhere('id', $request->user()->employee_id);
             }

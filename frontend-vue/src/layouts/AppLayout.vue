@@ -33,12 +33,20 @@ const links = computed<NavigationMenuItem[][]>(() => {
     }
   ]
   
-  // Only show Period menu for admin/hr role
-  if (userRole.value === 'admin' || userRole.value === 'hr') {
+  // Only show Period menu for admin/hr/hr2 role
+  if (userRole.value === 'admin' || userRole.value === 'hr' || userRole.value === 'hr2') {
     firstSection.push({
-      label: 'Period',
+      label: 'Periods',
       icon: 'i-lucide-calendar',
       to: '/period'
+    })
+  }
+
+  if (userRole.value === 'admin' || userRole.value === 'hr') {
+    firstSection.push({
+      label: 'Reports',
+      icon: 'i-lucide-file-text',
+      to: '/reports'
     })
   }
   

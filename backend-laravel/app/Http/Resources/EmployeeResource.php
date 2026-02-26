@@ -43,11 +43,24 @@ class EmployeeResource extends JsonResource
             //     ];
             // }),
 
-            'managers' => $this->managers->map(function($mgr) {
+            'heads' => $this->heads->map(function($manager) {
                 return [
-                    'id' => $mgr->id,
-                    'name' => $mgr->name,
-                    'reporting_type' => $mgr->pivot->reporting_type // Data dari Pivot
+                    'id' => $manager->id,
+                    'name' => $manager->name,
+                ];
+            }),
+
+            'subordinates' => $this->subordinates->map(function($subordinate) {
+                return [
+                    'id' => $subordinate->id,
+                    'name' => $subordinate->name,
+                ];
+            }),
+
+            'coworkers' => $this->coworkers->map(function($coworker) {
+                return [
+                    'id' => $coworker->id,
+                    'name' => $coworker->name,
                 ];
             }),
 

@@ -69,18 +69,29 @@ class Employee extends Authenticatable
                     ->wherePivot('is_primary', true);
     }
 
-    // 3. Relasi ke ATASAN (Managers)
-    public function managers(): BelongsToMany
+    // 3. Relasi ke BAWAHAN (Subordinates)
+    public function subordinates(): BelongsToMany
     {
         return $this->belongsToMany(Employee::class, 'employee_reporting_lines', 'employee_id', 'manager_id')
+                    ->where('reporting_type', 'subordinate')
                     ->withPivot('reporting_type', 'deleted_at')
                     ->withTimestamps();
     }
 
-    // 4. Relasi ke BAWAHAN (Subordinates)
-    public function subordinates(): BelongsToMany
+    // 4. Relasi ke ATASAN (Heads/Managers)
+    public function heads(): BelongsToMany
     {
-        return $this->belongsToMany(Employee::class, 'employee_reporting_lines', 'manager_id', 'employee_id')
+        return $this->belongsToMany(Employee::class, 'employee_reporting_lines', 'employee_id', 'manager_id')
+                    ->where('reporting_type', 'head')
+                    ->withPivot('reporting_type', 'deleted_at')
+                    ->withTimestamps();
+    }
+
+    // 5. Relasi ke REKAN KERJA (Coworkers)
+    public function coworkers(): BelongsToMany
+    {
+        return $this->belongsToMany(Employee::class, 'employee_reporting_lines', 'employee_id', 'manager_id')
+                    ->where('reporting_type', 'coworker')
                     ->withPivot('reporting_type', 'deleted_at')
                     ->withTimestamps();
     }
@@ -96,5 +107,10 @@ class Employee extends Authenticatable
         // Previously this returned evaluations by this employee (using `evaluator_id`), which
         // caused confusion when eager-loading `evaluator` to find evaluations *about* an employee.
         return $this->hasMany(Evaluation::class, 'employee_id', 'id');
+    }
+
+    public function attendanceRecords(): HasMany
+    {
+        return $this->hasMany(AttendanceRecord::class, 'employee_id', 'id');
     }
 }
