@@ -52,12 +52,12 @@ class Evaluation extends Model
 
     public function employee(): BelongsTo
     {
-        return $this->belongsTo(Employee::class, 'employee_id');
+        return $this->belongsTo(Employee::class, 'employee_id')->withTrashed();
     }
 
     public function evaluator(): BelongsTo
     {
-        return $this->belongsTo(Employee::class, 'evaluator_id');
+        return $this->belongsTo(Employee::class, 'evaluator_id')->withTrashed();
     }
 
     public function period(): BelongsTo
