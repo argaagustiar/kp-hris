@@ -1,5 +1,5 @@
 # source/backend-laravel/Dockerfile
-FROM php:8.2-fpm-alpine
+FROM php:8.2.35-fpm-alpine
 
 # Install dependencies (Sama seperti script manualmu, tapi lebih ringkas)
 RUN apk add --no-cache \
