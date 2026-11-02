@@ -21,7 +21,9 @@ return [
 
     'allowed_origins' => explode(',', env('FRONTEND_URL', 'http://localhost:5173')),
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '#^https://.*\.trycloudflare\.com$#',
+    ],
 
     'allowed_headers' => ['*'],
 
